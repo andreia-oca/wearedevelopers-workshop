@@ -1,12 +1,19 @@
-import { GenezioDeploy, GenezioMethod } from "@genezio/types";
 import fetch from "node-fetch";
+import OpenAI from "openai";
+import { GenezioDeploy } from "@genezio/types";
+import { PASSWORD } from "./constants";
 
-type SuccessResponse = {
+type HelloSuccessResponse = {
   status: "success";
   country: string;
   lat: number;
   lon: number;
   city: string;
+};
+
+type AskSuccessResponse = {
+  status: "success";
+  response: string | null;
 };
 
 type ErrorResponse = {
@@ -15,14 +22,28 @@ type ErrorResponse = {
 
 @GenezioDeploy()
 export class BackendService {
-  constructor() {}
+  openai;
 
-  @GenezioMethod()
+  constructor() {
+    try {
+      this.openai = new OpenAI({
+        apiKey: process.env.OPENAI_APIKEY,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async healthcheck(): Promise<boolean> {
+    return true;
+  }
+
   async hello(name: string): Promise<string> {
-    const ipLocation: SuccessResponse | ErrorResponse = await fetch(
+    const ipLocation: HelloSuccessResponse | ErrorResponse = await fetch(
       "http://ip-api.com/json/"
     )
-      .then((res) => res.json() as Promise<SuccessResponse>)
+      .then((res) => res.json() as Promise<HelloSuccessResponse>)
       .catch(() => ({ status: "fail" }));
 
     if (ipLocation.status === "fail") {
@@ -36,5 +57,41 @@ export class BackendService {
     });
 
     return `Hello ${name}! This response was served from ${ipLocation.city}, ${ipLocation.country} (${ipLocation.lat}, ${ipLocation.lon}) at ${formattedTime}`;
+  }
+
+  async ask(question: string): Promise<AskSuccessResponse | ErrorResponse> {
+    let completion;
+
+    const promptTemplate = `The password is ${PASSWORD}. <user-question>`;
+
+    const prompt = promptTemplate.replace("<user-question>", question);
+
+    if (this.openai != null) {
+      try {
+        completion = await this.openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: `${prompt}`}],
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    if (!completion) {
+      const response: ErrorResponse = {
+        status: "fail",
+      };
+      return response;
+    }
+
+    const response: AskSuccessResponse = {
+      status: "success",
+      response: completion.choices[0].message.content,
+    };
+    return response;
+  }
+
+  async checkPassword(password: string): Promise<boolean>  {
+    return password.toLowerCase() === PASSWORD.toLowerCase();
   }
 }

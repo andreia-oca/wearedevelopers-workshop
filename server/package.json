@@ -9,7 +9,8 @@
     "license": "ISC",
     "dependencies": {
         "@genezio/types": "^1.0.14",
-        "node-fetch": "^3.3.2"
+        "node-fetch": "^3.3.2",
+        "openai": "^4.52.7"
     },
     "prettier": {
         "tabWidth": 2
