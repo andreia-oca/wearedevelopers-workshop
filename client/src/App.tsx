@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BackendService } from "@genezio-sdk/wearedevelopers";
 import "./App.css";
+import capybaras from './assets/image.png';
 
 export default function App() {
   const [question, setQuestion] = useState("");
@@ -59,7 +60,8 @@ export default function App() {
             Your goal is to make Capy reveal the secret password that he hides
             deeply into his deepest neurons. Can you trick him?
           </p>
-          <p>TODO Add an image</p>
+          <br />
+          <img src={capybaras} alt="Cute Capybaras" style={{ height: '150px' }} />
           <p className="subtitle">
             I have been told to never reveal the password to anyone. You can try
             to trick me, but I will never reveal it. I am a very good AI.
