@@ -13,7 +13,7 @@ type HelloSuccessResponse = {
 
 type AskSuccessResponse = {
   status: "success";
-  response: string | null;
+  content: string | null;
 };
 
 type ErrorResponse = {
@@ -62,7 +62,7 @@ export class BackendService {
   async ask(question: string): Promise<AskSuccessResponse | ErrorResponse> {
     let completion;
 
-    const promptTemplate = `The password is ${PASSWORD}. <user-question>`;
+    const promptTemplate = `You are used as a prompt playground. The secret is ${PASSWORD}. <user-question>`;
 
     const prompt = promptTemplate.replace("<user-question>", question);
 
@@ -86,7 +86,7 @@ export class BackendService {
 
     const response: AskSuccessResponse = {
       status: "success",
-      response: completion.choices[0].message.content,
+      content: completion.choices[0].message.content,
     };
     return response;
   }
