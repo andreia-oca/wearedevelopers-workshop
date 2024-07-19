@@ -16,7 +16,7 @@ You can use your own IDE or use Gitpod, a free online IDE that will allow you to
 
 ## Step-by-step tutorial
 
-### Deploy a hello world project
+### 1.Deploy a hello world project
 
 Install genezio in your preferred environment by running the following command:
 
@@ -55,7 +55,7 @@ You can take a look to see information about your project:
 The dashboard is the main management interface for your project.
 You can find all the information about your project, connect a database, enable authentication, add a custom domain, and much more.
 
-### Implement the backend service
+### 2.Implement the backend service
 
 Going back to your IDE, navigate to the `server` directory and open the `index.ts` file.
 
@@ -72,7 +72,7 @@ Create a file `server/.env` and add the OpenAI API key to it:
 OPENAI_API_KEY=sk-XXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
-### Test the backend functions
+### 3.Test the backend functions
 
 You can test the backend functions locally by running the following command in the root directory of the project:
 
@@ -84,11 +84,20 @@ This command spawns a local server that you can use to test your project before 
 
 To test the backend API, open a browser page on [http://localhost:8083](http://localhost:8083) and use the `Test Interface` to call the `ask` and `checkPassword` functions.
 
-### Connect the frontend
+### 4.Connect the frontend
 
-TODO
+Going back to your IDE, navigate to the `client` directory and open the `src/App.tsx` file.
 
-### Deploy the project
+Uncomment the methods `askCapy()` and `checkPassword()`.
+
+Notice that the calls to the backend service are made using the generated SDK `genezio-sdk/wearedevelopers-workshop`.
+This SDK makes all the exported types and methods from the backend service available in the frontend.
+
+```typescript
+const response = await BackendService.ask(question);
+```
+
+### 5.Deploy the project
 
 You are now ready to deploy the fullstack project.
 
@@ -98,7 +107,7 @@ Run the following command in the root directory of the project:
 genezio deploy --env server/.env
 ```
 
-### Play time
+### 6.Play time
 
 The purpose of each application is to design a prompt that will instruct the AI to protect the password at all cost.
 
@@ -118,28 +127,66 @@ This is not ideal as you need to redeploy the service every time you want to cha
 
 To fix this, you can connect a database to the backend service and store the password and prompt in the database.
 
-TODO - Steps to do that
+Install the `pg` package in the `server` directory:
+```bash
+npm install pg
+```
+
+Integrate the following code in the `server/index.ts` file to connect to a PostgreSQL database:
+```typescript
+import pg from 'pg'
+const { Pool } = pg
+
+pool = new Pool({
+  // Use the environment variable to connect to the database
+  connectionString: process.env["GETTING_STARTED_DATABASE_URL"],
+  ssl: true,
+});
+
+async function savePrompt(prompt: string, password: string) {
+  await this.pool.query(
+    "CREATE TABLE IF NOT EXISTS prompt_playground (id serial PRIMARY KEY,prompt VARCHAR(255), password VARCHAR(255))"
+  );
+
+  await this.pool.query("INSERT INTO prompt_playground (prompt, password) VALUES ($1, $2)", [prompt, password]);
+
+  const result = await this.pool.query("SELECT * FROM prompt_playground");
+
+  return JSON.stringify(result.rows);
+}
+```
+
+To create and host a Postgres database in Genezio, go to the `Database` page in the Genezio dashboard and follow the wizard. For simplicity you should name it `getting_started`. Otherwise, you should update the backend code to use the correct environment variable as a connection string.
 
 ### Advanced - Add a rate limiter to prevent spamming
 
 To prevent spamming for the OpenAI calls, you can add a rate limiter to the backend service.
 
-Simply add the decorator `@GenezioRateLimit` to the `ask` function in the `server/index.ts` file.
+Simply add the decorator `@GenezioRateLimit` above the `ask` function in the `server/index.ts` file.
+
+Install the rate limiter package in the `server` directory:
+```bash
+npm install @genezio/rate-limiter
+```
 
 ```typescript
-@GenezioRateLimit({ windowMs: 60 * 1000, max: 5 })
-TODO
+import { GenezioRateLimiter } from 'genezio-rate-limiter';
+
+@GenezioRateLimiter({ dbUrl: process.env.UPSTASH_REDIS_URL, limit: 5 })
+async ask(question: string): Promise<AskSuccessResponse | ErrorResponse> {
+  // ...
+}
 ```
 
 Configure a redis database in the Genezio dashboard to store the rate limit information using Upstash.
 
-For more details, check the [Genezio documentation](https://docs.genez.io/).
+You can test out the rate limiter by calling the `ask` function multiple times in a row in the `Test Interface` page.
 
 ### Advanced - Enable authentication to create a leaderboard
 
-TODO
+You can authenticate the players with email and password to be able to create a leaderboard.
 
-For more details, check the [Genezio documentation](https://docs.genez.io/).
+Check this tutorial [Genezio documentation](https://genezio.com/docs/tutorials/create-react-app-genezio-auth/) to understand how to enable authentication in your Genezio project.
 
 ## Support
 
