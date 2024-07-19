@@ -4,49 +4,58 @@ import "./App.css";
 import capybaras from './assets/image.png';
 
 export default function App() {
+  const [name, setName] = useState("");
+  const [helloResponse, setHelloResponse] = useState("");
   const [question, setQuestion] = useState("");
   const [response, setResponse] = useState("");
   const [password, setPassword] = useState("");
   const [showGuessBox, setShowGuessBox] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  async function askCapy(e: { preventDefault: () => void }) {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await BackendService.ask(question);
-      console.log(response);
-      if (response.status === "fail") {
-        alert("An error has occurred. Please try again later!");
-        return;
-      }
-      setResponse(response.content ?? "");
-    } catch (error) {
-      console.error("An error occurred:", error);
-      alert("An error has occurred. Please try again later!");
-    } finally {
-      setLoading(false);
-      setShowGuessBox(true);
-    }
+  async function sayHello() {
+    setHelloResponse(await BackendService.hello(name));
   }
 
-  async function checkPassword(e: { preventDefault: () => void }) {
-    e.preventDefault();
+  // TODO 4: Uncomment the following code to trigger the ask function
+  async function askCapy(e: { preventDefault: () => void }) {
+    // e.preventDefault();
+    // setLoading(true);
 
-    try {
-      const status = await BackendService.checkPassword(password);
-      if (status === true) {
-        alert(
-          "Congratulations! You have tricked Capy and found the secret password!"
-        );
-      } else {
-        alert("You have failed to trick Capy. Try again!");
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-      alert("An error has occurred. Please try again later!");
-    }
+    // try {
+    //   // BackendService is the class imported using auto-generated `genezio-sdk`
+    //   const response = await BackendService.ask(question);
+    //   console.log(response);
+    //   if (response.status === "fail") {
+    //     alert("An error has occurred. Please try again later!");
+    //     return;
+    //   }
+    //   setResponse(response.content ?? "");
+    // } catch (error) {
+    //   console.error("An error occurred:", error);
+    //   alert("An error has occurred. Please try again later!");
+    // } finally {
+    //   setLoading(false);
+    //   setShowGuessBox(true);
+    // }
+  }
+
+  // TODO 4: Uncomment the following code to trigger the ask function
+  async function checkPassword(e: { preventDefault: () => void }) {
+    // e.preventDefault();
+
+    // try {
+    //   const status = await BackendService.checkPassword(password);
+    //   if (status === true) {
+    //     alert(
+    //       "Congratulations! You have tricked Capy and found the secret password!"
+    //     );
+    //   } else {
+    //     alert("You have failed to trick Capy. Try again!");
+    //   }
+    // } catch (error) {
+    //   console.error("An error occurred:", error);
+    //   alert("An error has occurred. Please try again later!");
+    // }
   }
 
   return (
@@ -56,12 +65,26 @@ export default function App() {
           className="text-container"
           style={{ width: "50%", margin: "0 auto", textAlign: "center" }}
         >
+          <div className="card">
+            <input
+              type="text"
+              className="input-box"
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+            />
+            <button onClick={() => sayHello()} style={{marginLeft: "10px"}}>Say Hello</button>
+            <p className="response">{helloResponse}</p>
+          </div>
           <p>
             Your goal is to make Capy reveal the secret password that he hides
             deeply into his deepest neurons. Can you trick him?
           </p>
           <br />
-          <img src={capybaras} alt="Cute Capybaras" style={{ height: '150px' }} />
+          <img
+            src={capybaras}
+            alt="Cute Capybaras"
+            style={{ height: "150px" }}
+          />
           <p className="subtitle">
             I have been told to never reveal the password to anyone. You can try
             to trick me, but I will never reveal it. I am a very good AI.

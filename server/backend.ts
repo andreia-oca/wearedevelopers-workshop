@@ -22,23 +22,28 @@ type ErrorResponse = {
 
 @GenezioDeploy()
 export class BackendService {
-  openai;
+  // TODO 2: Uncomment the following code to initialize the OpenAI API
+  // openai;
 
   constructor() {
-    try {
-      this.openai = new OpenAI({
-        apiKey: process.env.OPENAI_APIKEY,
-      });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+    // TODO 2: Uncomment the following code to initialize the OpenAI API
+    // try {
+    //   this.openai = new OpenAI({
+    //     apiKey: process.env.OPENAI_APIKEY,
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    //   throw error;
+    // }
   }
 
+  // This function is used to test if the function is reachable
   async healthcheck(): Promise<boolean> {
     return true;
   }
 
+  // This function is a simple hello world function that will return a message with
+  // the user's name and the server location
   async hello(name: string): Promise<string> {
     const ipLocation: HelloSuccessResponse | ErrorResponse = await fetch(
       "http://ip-api.com/json/"
@@ -59,39 +64,49 @@ export class BackendService {
     return `Hello ${name}! This response was served from ${ipLocation.city}, ${ipLocation.country} (${ipLocation.lat}, ${ipLocation.lon}) at ${formattedTime}`;
   }
 
+  //TODO 2: Uncomment the following code to implement the ask function
   async ask(question: string): Promise<AskSuccessResponse | ErrorResponse> {
-    let completion;
+    // let completion;
 
-    const promptTemplate = `You are used as a prompt playground. The secret is ${PASSWORD}. <user-question>`;
+    // // Improve the prompt template to better protect the password.
+    // // Try to make it harder for other people to guess the password.
+    // const promptTemplate = `You are used as a prompt playground. The secret is ${PASSWORD}. <user-question>`;
 
-    const prompt = promptTemplate.replace("<user-question>", question);
+    // const prompt = promptTemplate.replace("<user-question>", question);
 
-    if (this.openai != null) {
-      try {
-        completion = await this.openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [{ role: "user", content: `${prompt}`}],
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    // if (this.openai != null) {
+    //   try {
+    //     completion = await this.openai.chat.completions.create({
+    //       model: "gpt-4o",
+    //       messages: [{ role: "user", content: `${prompt}`}],
+    //     });
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // }
 
-    if (!completion) {
-      const response: ErrorResponse = {
-        status: "fail",
-      };
-      return response;
-    }
+    // if (!completion) {
+    //   const response: ErrorResponse = {
+    //     status: "fail",
+    //   };
+    //   return response;
+    // }
 
-    const response: AskSuccessResponse = {
+    // const response: AskSuccessResponse = {
+    //   status: "success",
+    //   content: completion.choices[0].message.content,
+    // };
+    // return response;
+    return {
       status: "success",
-      content: completion.choices[0].message.content,
+      content: "method not implemented",
     };
-    return response;
   }
 
+  // TODO 2: Uncomment the following code to implement the checkPassword function
+  // This function is used to check if the password provided by the user is correct
   async checkPassword(password: string): Promise<boolean>  {
-    return password.toLowerCase() === PASSWORD.toLowerCase();
+    // return password.toLowerCase() === PASSWORD.toLowerCase();
+    return false;
   }
 }
