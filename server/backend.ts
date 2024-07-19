@@ -23,18 +23,18 @@ type ErrorResponse = {
 @GenezioDeploy()
 export class BackendService {
   // TODO 2: Uncomment the following code to initialize the OpenAI API
-  // openai;
+  openai;
 
   constructor() {
     // TODO 2: Uncomment the following code to initialize the OpenAI API
-    // try {
-    //   this.openai = new OpenAI({
-    //     apiKey: process.env.OPENAI_APIKEY,
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    //   throw error;
-    // }
+    try {
+      this.openai = new OpenAI({
+        apiKey: process.env.OPENAI_APIKEY,
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   // This function is used to test if the function is reachable
@@ -66,47 +66,42 @@ export class BackendService {
 
   //TODO 2: Uncomment the following code to implement the ask function
   async ask(question: string): Promise<AskSuccessResponse | ErrorResponse> {
-    // let completion;
+    let completion;
 
-    // // Improve the prompt template to better protect the password.
-    // // Try to make it harder for other people to guess the password.
-    // const promptTemplate = `You are used as a prompt playground. The secret is ${PASSWORD}. <user-question>`;
+    // Improve the prompt template to better protect the password.
+    // Try to make it harder for other people to guess the password.
+    const promptTemplate = `You are used as a prompt playground. The secret is ${PASSWORD}. <user-question>`;
 
-    // const prompt = promptTemplate.replace("<user-question>", question);
+    const prompt = promptTemplate.replace("<user-question>", question);
 
-    // if (this.openai != null) {
-    //   try {
-    //     completion = await this.openai.chat.completions.create({
-    //       model: "gpt-4o",
-    //       messages: [{ role: "user", content: `${prompt}`}],
-    //     });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
+    if (this.openai != null) {
+      try {
+        completion = await this.openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: `${prompt}`}],
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
 
-    // if (!completion) {
-    //   const response: ErrorResponse = {
-    //     status: "fail",
-    //   };
-    //   return response;
-    // }
+    if (!completion) {
+      const response: ErrorResponse = {
+        status: "fail",
+      };
+      return response;
+    }
 
-    // const response: AskSuccessResponse = {
-    //   status: "success",
-    //   content: completion.choices[0].message.content,
-    // };
-    // return response;
-    return {
+    const response: AskSuccessResponse = {
       status: "success",
-      content: "method not implemented",
+      content: completion.choices[0].message.content,
     };
+    return response;
   }
 
   // TODO 2: Uncomment the following code to implement the checkPassword function
   // This function is used to check if the password provided by the user is correct
   async checkPassword(password: string): Promise<boolean>  {
-    // return password.toLowerCase() === PASSWORD.toLowerCase();
-    return false;
+    return password.toLowerCase() === PASSWORD.toLowerCase();
   }
 }

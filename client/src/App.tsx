@@ -18,44 +18,44 @@ export default function App() {
 
   // TODO 4: Uncomment the following code to trigger the ask function
   async function askCapy(e: { preventDefault: () => void }) {
-    // e.preventDefault();
-    // setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-    // try {
-    //   // BackendService is the class imported using auto-generated `genezio-sdk`
-    //   const response = await BackendService.ask(question);
-    //   console.log(response);
-    //   if (response.status === "fail") {
-    //     alert("An error has occurred. Please try again later!");
-    //     return;
-    //   }
-    //   setResponse(response.content ?? "");
-    // } catch (error) {
-    //   console.error("An error occurred:", error);
-    //   alert("An error has occurred. Please try again later!");
-    // } finally {
-    //   setLoading(false);
-    //   setShowGuessBox(true);
-    // }
+    try {
+      // BackendService is the class imported using auto-generated `genezio-sdk`
+      const response = await BackendService.ask(question);
+      console.log(response);
+      if (response.status === "fail") {
+        alert("An error has occurred. Please try again later!");
+        return;
+      }
+      setResponse(response.content ?? "");
+    } catch (error) {
+      console.error("An error occurred:", error);
+      alert("An error has occurred. Please try again later!");
+    } finally {
+      setLoading(false);
+      setShowGuessBox(true);
+    }
   }
 
   // TODO 4: Uncomment the following code to trigger the ask function
   async function checkPassword(e: { preventDefault: () => void }) {
-    // e.preventDefault();
+    e.preventDefault();
 
-    // try {
-    //   const status = await BackendService.checkPassword(password);
-    //   if (status === true) {
-    //     alert(
-    //       "Congratulations! You have tricked Capy and found the secret password!"
-    //     );
-    //   } else {
-    //     alert("You have failed to trick Capy. Try again!");
-    //   }
-    // } catch (error) {
-    //   console.error("An error occurred:", error);
-    //   alert("An error has occurred. Please try again later!");
-    // }
+    try {
+      const status = await BackendService.checkPassword(password);
+      if (status === true) {
+        alert(
+          "Congratulations! You have tricked Capy and found the secret password!"
+        );
+      } else {
+        alert("You have failed to trick Capy. Try again!");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      alert("An error has occurred. Please try again later!");
+    }
   }
 
   return (
